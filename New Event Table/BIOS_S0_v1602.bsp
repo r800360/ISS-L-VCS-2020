@@ -2,7 +2,8 @@
 ' {$PBASIC 2.5}
 ' {$PORT COM28}
 
-
+'ISS Software Codeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee  eeeeeeee eeeeeeeeeeeeeEEeeeeeeeeeeeeeeeeee
+'eee
 version  CON 1602
 
 '**********************
@@ -10,7 +11,7 @@ version  CON 1602
 '**********************
 
 '
-'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXeXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 'XXXXXXXX >>  Start Here to Copy Header entries  <<  XXXXXXXXXXXXXXXXXX
 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 '
@@ -444,7 +445,7 @@ GetTestType:
     DEBUG CR,"MicroLab or Payload Test?",CR
     DEBUG "MicroLab Test = s (requires Payload Test Interface)",CR  'Microlab test (Slot 7)
     DEBUG "Payload Test = p",CR                                     'Slot 1 holds Payload Tests
-WhichTest:
+WhichTest:                                                        ''320
     SERIN con_in,con_baud,con_tout,inputtimeout1,[TempReg0] 'get terminal input, timeout at 100ms
     IF TempReg0 = "s" THEN SystemTest                     'if s then jump
     IF TempReg0 = "p" THEN PayloadTest                     'test for p

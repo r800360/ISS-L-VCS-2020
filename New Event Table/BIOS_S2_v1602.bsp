@@ -2,7 +2,7 @@
 ' {$PBASIC 2.5}
 ' {$PORT COM28}
 
-'ISS Team L Software Code
+'ISS Team L Software CodeeeeeeeeeeeEE
 version  CON 1602
 
 '**********************
@@ -418,11 +418,10 @@ FoundEvent:
   BRANCH UserVar3,[Event0,    'Event 0 (do nothing)
   Event1,                     'Event 1 (Take Picture)
   Event2,                     'Event 2 (pump+motor)
-  Event3,                     'Event 3 (loop interval)
-  Event4,                     'Event 4 (loop switch)
-  Event5,                     'Event 5 (photo loop)
-  Event6,                     'Event 6 (loop structure)
-  Event7]                     'Event 7 (loop everything)
+  Event3,                     'Event 3 (loop structure)
+  Event4]                     'Event 4 (LOOP everything)
+
+
 
   'IO 2,3 - LED
   'IO 4,5 - Motor
@@ -457,143 +456,159 @@ TakePhotoReturn:
          '
          I2COUT InternI2C, PCF8574address, [$FF] 'IO2,3 LED, Pump and motor off (IO4,5 motor; IO6,7 pump)
          ' Values in return back are lost when jumping to Slot 6
-         tempReg0 = 4 'Destination Index (EventTableReturn)
+         tempReg0 = 4 'Destination Index (EventTableReturn
          RUN 0        'Destination Slot
 
 
-
-
 Event2: DEBUG CR,"PM" ,CR
-        STORE 2
-        READ list_iter, UserVar0
-        READ list_iter + UserVar0 + 1, UserVar1
-        READ list_iter + UserVar0 + 2, UserVar2
-        READ list_iter + 7, Word TempWord       'UserVar0 + 2*UserVar2 + 3
-        'DEBUG DEC TempWord, CR
-        'DEBUG DEC UserVar0, CR
-        'DEBUG DEC UserVar1, CR
-        'DEBUG DEC UserVar2, CR
-        'DEBUG DEC UserVar3, CR
-        'DEBUG DEC UserVar4, CR
-        IF UserVar1 // 2 = 0 THEN      'checks IF num_switch is even
-          I2COUT InternI2C, PCF8574address, [%11111010] 'IO2,3 LED, IO 4,5 Motor, IO 6,7 Pump
-          'DEBUG DEC TempWord, CR
-          'DEBUG DEC UserVar0, CR
-          'DEBUG DEC UserVar1, CR
-          'DEBUG DEC UserVar2, CR
-          'DEBUG DEC UserVar3, CR
-          'DEBUG DEC UserVar4, CR
-          PAUSE TempWord
-          I2COUT InternI2C, PCF8574address, [$FF]
-        ELSE
-          I2COUT InternI2C, PCF8574address, [%11110101] 'IO2,3 LED, IO 4,5 Motor, IO 6,7 Pump
-          'DEBUG TempWord, CR
-          PAUSE TempWord
-          I2COUT InternI2C, PCF8574address, [$FF]
-        ENDIF
-        tempReg0 = 4 'Destination Index (EventTableReturn)
-        RUN 0        'Destination Slot
+  STORE 2
+  READ list_iter, UserVar0
+  READ list_iter + UserVar0 + 1, UserVar2
+  FOR UserVar5 = 0 TO UserVar2
+  READ 2*UserVar5 + list_iter + 2, Word TempWord
+  IF UserVar5 // 2 = 0 THEN
+    I2COUT InternI2C, PCF8574address, [%10101111] 'IO2,3 LED, IO 4,5 Motor, IO 6,7 Pump
+    PAUSE TempWord
+    I2COUT InternI2C, PCF8574address, [$FF]
+  ELSE
+    I2COUT InternI2C, PCF8574address, [%10011111] 'IO2,3 LED, IO 4,5 Motor, IO 6,7 Pump
+    PAUSE TempWord
+    I2COUT InternI2C, PCF8574address, [$FF]
+  ENDIF
+  NEXT
+  GOSUB Event1
+  STORE DataStorage
+  tempReg0 = 4
+  RUN 0
 
-Event3: DEBUG CR,"LI"  ,CR
-        STORE 2
-        READ list_iter, UserVar0
-        READ list_iter + UserVar0 + 1, UserVar1
-        READ list_iter + UserVar0 + 2, UserVar2
-        READ list_iter + UserVar0 + 3 + 2*UserVar1 + 1, UserVar3
-        READ list_iter + UserVar0 + 3 + 2*UserVar1 + 2, UserVar5
-        'DEBUG "INI:"
-        DEBUG UserVar3, CR
-        'DEBUG "INS:"
+
+
+
+
+'Event2: DEBUG CR,"PM" ,CR
+        'STORE 2
+        'READ list_iter, UserVar0        'list_iter is UserVar0
+        'READ list_iter+UserVar0+1, UserVar1    'num_switch is UserVar1
+        'READ list_iter+UserVar0+2, UserVar2    'og_switch is UserVar2
+        'READ 2*UserVar1+list_iter+UserVar0+3, Word TempWord    'interval_length is TempWord
+        'DEBUG DEC TempWord, CR
+        'IF TempWord < 32768 THEN      'checks IF num_switch is even
+        '  I2COUT InternI2C, PCF8574address, [%11111010] 'IO2,3 LED, IO 4,5 Motor, IO 6,7 Pump
+        '  PAUSE TempWord
+        '  I2COUT InternI2C, PCF8574address, [$FF]
+        'ELSE
+         ' I2COUT InternI2C, PCF8574address, [%11110101] 'IO2,3 LED, IO 4,5 Motor, IO 6,7 Pump
+         ' PAUSE TempWord - 32767
+        'I2COUT InternI2C, PCF8574address, [$FF]
+        'ENDIF
+        'tempReg0 = 4 'Destination Index (EventTableReturn)
+        'RUN 0        'Destination Slot
+
+
+'Event3: DEBUG CR,"LI"  ,CR
+        'STORE 2
+        'READ list_iter, UserVar0
+        'READ list_iter + UserVar0 + 1, UserVar1
+        'READ list_iter + UserVar0 + 2, UserVar3
+        'READ UserVar1*2 + list_iter + UserVar0 + 3, UserVar2
+        'READ UserVar1*2 + list_iter + UserVar0 + 3 + 1, UserVar5
+        'DEBUG DEC UserVar1*2 + list_iter + UserVar0 + 3 + 1, CR
+        'DEBUG UserVar1, CR
+        'DEBUG DEC UserVar2, CR
+        'DEBUG UserVar3, CR
+        ''DEBUG "INS:"
         'DEBUG UserVar1, CR
         'DEBUG "IOI:"
         'DEBUG UserVar4, CR
-        IF UserVar3 < UserVar5 - 1 THEN
-          UserVar3 = UserVar3 + 1
-          WRITE  list_iter+UserVar0 + 3 + 2*UserVar1 + 1, UserVar3
-          DEBUG UserVar3, CR
-          STORE 0
-          WRITE DurDay, 0: WRITE DurHour, 0: WRITE DurMin, 2 '0 23 59
-          STORE 2
-          FOR tempReg0 = 2 TO 3
-              WRITE ETable+tempReg0*5+3, $FF   'Tag Event, increment tag count
-          NEXT
-        ELSE
-          WRITE  list_iter+UserVar0 + 3 + 2*UserVar1 + 1, 0
-        ENDIF
+        'IF UserVar2 < UserVar5 - 1 THEN
+          'UserVar2 = UserVar2 + 1
+          'WRITE UserVar1*2 + list_iter + UserVar0 + 3, UserVar2
+          'DEBUG DEC UserVar2, CR
+          'STORE 0
+          'WRITE DurDay, 0: WRITE DurHour, 0: WRITE DurMin, 2 '0 23 59
+          'STORE 2
+          'FOR tempReg0 = 2 TO 3
+              'WRITE ETable+tempReg0*5+3, $FF   'Tag Event, increment tag count
+          'NEXT
+        'ELSE
+          'WRITE UserVar1*2 + list_iter+UserVar0 + 3, 0
+        'ENDIF
         'DEBUG "PNI"
         'DEBUG UserVar3, CR
         'DEBUG "PNS:"
         'DEBUG UserVar1, CR
         'DEBUG "POI:"
         'DEBUG UserVar5, CR
-        STORE DataStorage
-        tempReg0 = 4 'Destination Index (EventTableReturn)
-        RUN 0        'Destination Slot
+        'STORE DataStorage
+        'tempReg0 = 4 'Destination Index (EventTableReturn)
+        'RUN 0        'Destination Slot
 
 
 
-Event4: DEBUG CR,"LS" ,CR
+'Event3: DEBUG CR,"LS" ,CR
+  '      STORE 2
+  '      READ list_iter, UserVar0
+  '     READ list_iter + UserVar0 + 1, UserVar1
+   '     READ list_iter + UserVar0 + 2, UserVar2
+   '     'DEBUG " initial num_switch: "
+    '    'DEBUG UserVar1, CR
+     '   'DEBUG "initial og_interval: "
+    '    'DEBUG UserVar4, CR
+    '    IF UserVar1 < UserVar2 - 1 THEN
+    '      UserVar1 = UserVar1 + 1
+    '      WRITE list_iter+UserVar0 + 1, UserVar1
+    '      STORE 0
+    '      WRITE DurDay, 0: WRITE DurHour, 0: WRITE DurMin, 2        '0 23 59
+    '      STORE 2
+    '      FOR tempReg0 = 2 TO 3
+    '          WRITE ETable+tempReg0*5+3, $FF   'Tag Event, increment tag count
+     '     NEXT
+     '   ELSE
+     '     WRITE  list_iter+UserVar0 + 1, 0
+     '   ENDIF
+     '   'DEBUG " initial num_switch: "
+     '   'DEBUG UserVar1, CR
+     '   'DEBUG "initial og_interval: "
+     '   'DEBUG UserVar4, CR
+     '   STORE DataStorage
+    '    tempReg0 = 4 'Destination Index (EventTableReturn)
+     '   RUN 0        'Destination Slot
+
+'Event4: DEBUG CR,"PL" ,CR
+ '       STORE 2
+ '       READ CoolIter, UserVar5
+ '       IF UserVar5 < 1 THEN               '
+ '         WRITE CoolIter, 2
+ ''       ENDIF
+ ''       IF UserVar5 > 0 THEN
+ '         UserVar5 = UserVar5 - 1
+ '         WRITE CoolIter, UserVar5
+ ''         STORE 0
+  ''        WRITE DurDay, 0: WRITE DurHour, 0: WRITE DurMin, 8        '1 0 18
+  '        STORE 2
+  '        FOR tempReg0 = 7 TO 8  'rows 7 AND 8
+ '             WRITE ETable+tempReg0*5+3, $FF   'Tag Event, increment tag count
+ ''         NEXT
+ '       ENDIF
+ '       STORE DataStorage
+'        tempReg0 = 4 'Destination Index (EventTableReturn)
+'        RUN 0        'Destination Slot
+
+
+Event3: DEBUG CR,"LSt" ,CR
         STORE 2
         READ list_iter, UserVar0
-        READ list_iter + UserVar0 + 1, UserVar1
-        READ list_iter + UserVar0 + 2, UserVar2
-        'DEBUG " initial num_switch: "
-        'DEBUG UserVar1, CR
-        'DEBUG "initial og_interval: "
-        'DEBUG UserVar4, CR
-        IF UserVar1 < UserVar2 - 1 THEN
-          UserVar1 = UserVar1 + 1
-          WRITE  list_iter+UserVar0 + 1, UserVar1
-          STORE 0
-          WRITE DurDay, 0: WRITE DurHour, 0: WRITE DurMin, 2        '0 23 59
-          STORE 2
-          FOR tempReg0 = 2 TO 4
-              WRITE ETable+tempReg0*5+3, $FF   'Tag Event, increment tag count
-          NEXT
-        ELSE
-          WRITE  list_iter+UserVar0 + 1, 0
-        ENDIF
-        'DEBUG " initial num_switch: "
-        'DEBUG UserVar1, CR
-        'DEBUG "initial og_interval: "
-        'DEBUG UserVar4, CR
-        STORE DataStorage
-        tempReg0 = 4 'Destination Index (EventTableReturn)
-        RUN 0        'Destination Slot
-
-Event5: DEBUG CR,"PL" ,CR
-        STORE 2
-        READ CoolIter, UserVar5
-        IF UserVar5 < 1 THEN               '
-          WRITE CoolIter, 2
-        ENDIF
-        IF UserVar5 > 0 THEN
-          UserVar5 = UserVar5 - 1
-          WRITE CoolIter, UserVar5
-          STORE 0
-          WRITE DurDay, 0: WRITE DurHour, 0: WRITE DurMin, 9        '1 0 21
-          STORE 2
-          FOR tempReg0 = 8 TO 9  'rows 8 AND 9
-              WRITE ETable+tempReg0*5+3, $FF   'Tag Event, increment tag count
-          NEXT
-        ENDIF
-        STORE DataStorage
-        tempReg0 = 4 'Destination Index (EventTableReturn)
-        RUN 0        'Destination Slot
-Event6: DEBUG CR,"LS" ,CR
-        STORE 2
-        READ list_iter, UserVar0
-        READ list_iter + UserVar0 + 1, UserVar1
-        READ list_iter + UserVar0 + 2, UserVar2
+        'READ list_iter + UserVar0 + 1, UserVar1
+        READ list_iter + UserVar0 + 1, UserVar2
         'DEBUG "initial list_iter:"
         'DEBUG UserVar0, CR
-        IF UserVar0 < 19 THEN      'length of DATA unknown
-          UserVar0 = UserVar0 + 2*UserVar2 + 4
+        IF UserVar0 < 5 THEN
+          UserVar0 = 2*UserVar2 + UserVar0 + 1
           WRITE  list_iter, UserVar0
           STORE 0
-          WRITE DurDay, 0: WRITE DurHour, 0: WRITE DurMin, 2     '0 23 59
+          WRITE DurDay, 0: WRITE DurHour, 0: WRITE DurMin, 1     '0 23 49
           STORE 2
-          FOR tempReg0 = 2 TO 10          'rows 2 to 10
+          FOR tempReg0 = 1 TO 5         'rows 1 to 3
               WRITE ETable+tempReg0*5+3, $FF   'Tag Event, increment tag count
           NEXT
         ELSE
@@ -605,18 +620,23 @@ Event6: DEBUG CR,"LS" ,CR
 
         tempReg0 = 4 'Destination Index (EventTableReturn)
         RUN 0        'Destination Slot
-Event7: DEBUG CR,"LE" ,CR
+Event4: DEBUG CR,"LE" ,CR
         STORE 0
-        WRITE DurDay, 0: WRITE DurHour, 0: WRITE DurMin, 2               '0 23 59
+        WRITE DurDay, 0: WRITE DurHour, 0: WRITE DurMin, 1               '0 23 49
         STORE 2
-        FOR tempReg0 = 1 TO 16     'LOOP everything infinitely
+        FOR tempReg0 = 1 TO 17     'LOOP everything infinitely
           WRITE ETable+tempReg0*5+3, $FF   'Tag Event, increment tag count
         NEXT
         STORE DataStorage
         tempReg0 = 4 'Destination Index (EventTableReturn)
         RUN 0        'Destination Slot
 
-
+'Event7: DEBUG CR, "BE", CR
+      '  GOSUB Event1
+      '  GOSUB Event1
+      '  GOSUB Event1
+      '  tempReg0 = 4
+      '  RUN 0
 
 
 
@@ -649,29 +669,28 @@ P3vector:
 
 
 
-         '    Day  Hour  Min   Tag  EventByte
- ETable DATA  00,  00,   00,   $FF,     00   'Row 0                                  0 0 0
-        DATA  00,  00,   01,   $FF,     00   'Row 1                                  0 23 58
-        DATA  00,  00,   03,   $FF,     02   'Row 2                                  1 0 0
-        DATA  00,  00,   04,   $FF,     03   'Row 3                                  1 0 2
-        DATA  00,  00,   05,   $FF,     04   'Row 4                                  1 0 3
-        DATA  00,  00,   06,   $FF,     01   'Row 5                                  1 0 6
-        DATA  00,  00,   07,   $FF,     01   'Row 6                                  1 0 9
-        DATA  00,  00,   08,   $FF,     01   'Row 7                                  1 0 13
-        DATA  00,  00,   10,   $FF,     01   'Row 8                                  1 0 22
-        DATA  00,  00,   11,   $FF,     05   'Row 9                                  1 0 31
-        DATA  00,  00,   12,   $FF,     06   'Row 10                                 1 0 32
-        DATA  00,  00,   13,   $FF,     07   'Row 11                                 1 0 33
-        DATA  00,  00,   14,   $FF,     07   'Row 12                                 1 0 38
-        DATA  00,  00,   15,   $FF,     07   'Row 13                                 1 0 43
-        DATA  00,  00,   16,   $FF,     07   'Row 14                                 1 0 48
-        DATA  00,  00,   17,   $FF,     07   'Row 15                                 1 0 53
-        DATA  00,  00,   18,   $FF,     07   'Row 16                                 1 0 58
-        DATA  00,  00,   19,   $FF,     01   'Row 17
+         '    Day  Hour  Min   Tag  EventByte           Day Hour Min Tag EventByte
+ ETable DATA  00,  00,   00,   $FF,     00   'Row 0     00, 00, 00, $FF, 00       |   0 0 0
+        DATA  00,  00,   02,   $FF,     01   'Row 1     00, 00, 02, $FF, 01       |   0 23 50
+        DATA  00,  00,   03,   $FF,     02   'Row 2     00, 00, 03, $FF, 02       |   1 0 0
+        DATA  00,  00,   04,   $FF,     01   'Row 3     00, 00, 04, $FF, 01       |   1 0 9
+        DATA  00,  00,   05,   $FF,     01   'Row 4     00, 00, 05, $FF, 01       |   1 0 10
+        DATA  00,  00,   06,   $FF,     03   'Row 5     00, 00, 06, $FF, 01       |   1 0 11
+        DATA  00,  00,   07,   $FF,     04   'Row 6     00, 00, 07, $FF, 03       |   1 0 12
+        DATA  00,  00,   09,   $FF,     04   'Row 7     00, 00, 08, $FF, 04       |   1 0 13
+        DATA  00,  00,   10,   $FF,     04   'Row 8     00, 00, 09, $FF, 04       |   1 0 14
+        DATA  00,  00,   11,   $FF,     04   'Row 9     00, 00, 10, $FF, 04       |   1 0 15
+        DATA  00,  00,   12,   $FF,     04   'Row 10    00, 00, 11, $FF, 04       |   1 0 30
+        DATA  00,  00,   13,   $FF,     04   'Row 11    00, 00, 12, $FF, 04       |   1 0 33
+        DATA  00,  00,   14,   $FF,     04   'Row 12    00, 00, 13, $FF, 04       |   1 0 38
+        DATA  00,  00,   15,   $FF,     04   'Row 13    00, 00, 14, $FF, 04       |   1 0 43
+        DATA  00,  00,   16,   $FF,     04   'Row 14    00, 00, 15, $FF, 04       |   1 0 48
+        DATA  00,  00,   17,   $FF,     04  'Row 15    00, 00, 16, $FF, 04       |   1 0 53
+        DATA  00,  00,   18,   $FF,     04   'Row 16    00, 00, 17, $FF, 04       |   1 0 58
+        DATA  00,  00,   19,   $FF,     04   'Row 17    00, 00, 18, $FF, 04       |
 
 
 
-
-
-list_iter DATA 0, 0, 2, 0, 3, 0, 1, Word 2000, 0, 3, 0, 0, 0, 3, 0, 2, Word 1000
+''list_iter, og_switch1, TempWord1, og_switch2, TempWord2
+list_iter DATA 0, 1, Word 3000, 1, Word 6000, 2, Word 36767, Word 37767
 CoolIter DATA 2

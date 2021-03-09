@@ -17,7 +17,7 @@ version  CON 1602
 '
                        'S0 contains the timing loop
                        'S2 contains the event table AND actions.
-                       'S1 contains test code placeholder
+                       'S1 contains test code placeholder                   320
 '
 ' 2012
 ' 1. added test for payload interface boards
