@@ -439,37 +439,38 @@ Event0: DEBUG CR,"DN",CR
         RUN 0        'Destination Slot
 
 Event1: DEBUG CR,"TP",CR
-         I2COUT InternI2C, PCF8574address, [%11111011] 'IO2,3 LED, Pump and motor off (IO4,5 motor; IO6,7 pump)
-         '
-         '   Take a High Resolution Photo of the Chamber
-         'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
-         PUT    CameraRes,Camera320        'Template default
-         PUT    CameraQua,CameraNormal     'set to Normal
+        I2COUT InternI2C, PCF8574address, [%11111011] 'IO2,3 LED, Pump and motor off (IO4,5 motor; IO6,7 pump)
+        '
+        '   Take a High Resolution Photo of the Chamber
+        'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+        PUT    CameraRes,Camera320        'Template default
+        PUT    CameraQua,CameraNormal     'set to Normal
 
-         PUT VectorFromSlot,2 'Return Slot
-         PUT VectorFromNum,1  'Return Index
-         TempReg1 = 1    'Destination Index        '
-         TempReg3 = 6    'Destination Slot
-         RUN 6           'Execute a slot goto procedure now doit
+        PUT VectorFromSlot,2 'Return Slot
+        PUT VectorFromNum,1  'Return Index
+        TempReg1 = 1    'Destination Index        '
+        TempReg3 = 6    'Destination Slot
+        RUN 6           'Execute a slot goto procedure now doit
 TakePhotoReturn:
-         'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
-         '
+        'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+        '
 
-         I2COUT InternI2C, PCF8574address, [$FF] 'IO2,3 LED, Pump and motor off (IO4,5 motor; IO6,7 pump)
-         ' Values in return back are lost when jumping to Slot 6
-         STORE 2
-         READ CoolIter, UserVar1
+        I2COUT InternI2C, PCF8574address, [$FF] 'IO2,3 LED, Pump and motor off (IO4,5 motor; IO6,7 pump)
+        ' Values in return back are lost when jumping to Slot 6
+        STORE 2
+        READ CoolIter, UserVar1
+        'DEBUG DEC UserVar1, CR
+        IF UserVar1 > 0 THEN
+         UserVar1 = UserVar1 - 1
+         WRITE CoolIter, UserVar1
          'DEBUG DEC UserVar1, CR
-         IF UserVar1 > 0 THEN
-          UserVar1 = UserVar1 - 1
-          WRITE CoolIter, UserVar1
-          'DEBUG DEC UserVar1, CR
-          GOTO Event1
-         ENDIF
-         'DEBUG DEC UserVar1, CR
-         STORE DataStorage
-         tempReg0 = 4 'Destination Index (EventTableReturn
-         RUN 0        'Destination Slot
+         GOTO Event1
+        ENDIF
+        'DEBUG DEC UserVar1, CR
+        STORE DataStorage
+        tempReg0 = 4 'Destination Index (EventTableReturn
+        RUN 0        'Destination Slot
+
 
 
 Event2: DEBUG CR,"PM" ,CR
@@ -623,7 +624,7 @@ Event3: DEBUG CR,"LSt" ,CR
         READ list_iter + UserVar0 + 1, UserVar2
         'DEBUG "initial list_iter:"
         'DEBUG UserVar0, CR
-        IF UserVar0 < 4 THEN
+        IF UserVar0 < 89 THEN
           UserVar0 = 2*UserVar2 + UserVar0 + 1
           WRITE  list_iter, UserVar0
           STORE 0
@@ -716,6 +717,7 @@ P3vector:
         DATA  01,  00,   22,   $FF,     04  'Row 15    00, 00, 16, $FF, 04       |   1 0 53
         DATA  01,  00,   23,   $FF,     04   'Row 16    00, 00, 17, $FF, 04       |   1 0 58
         DATA  01,  00,   24,   $FF,     04   'Row 17    00, 00, 18, $FF, 04       |
+
 
 
 
