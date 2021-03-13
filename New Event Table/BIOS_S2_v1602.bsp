@@ -439,11 +439,11 @@ Event0: DEBUG CR,"DN",CR
         RUN 0        'Destination Slot
 
 Event1: DEBUG CR,"TP",CR
-         I2COUT InternI2C, PCF8574address, [%11011111] 'IO2,3 LED, Pump and motor off (IO4,5 motor; IO6,7 pump)
+         I2COUT InternI2C, PCF8574address, [%11111011] 'IO2,3 LED, Pump and motor off (IO4,5 motor; IO6,7 pump)
          '
          '   Take a High Resolution Photo of the Chamber
          'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
-         PUT    CameraRes,Camera640        'Template default
+         PUT    CameraRes,Camera320        'Template default
          PUT    CameraQua,CameraNormal     'set to Normal
 
          PUT VectorFromSlot,2 'Return Slot
