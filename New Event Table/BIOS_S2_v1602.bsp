@@ -457,9 +457,9 @@ TakePhotoReturn:
 
          I2COUT InternI2C, PCF8574address, [$FF] 'IO2,3 LED, Pump and motor off (IO4,5 motor; IO6,7 pump)
          ' Values in return back are lost when jumping to Slot 6
-
+         STORE 2
          READ CoolIter, UserVar1
-         DEBUG DEC UserVar1, CR
+         'DEBUG DEC UserVar1, CR
          IF UserVar1 > 0 THEN
           UserVar1 = UserVar1 - 1
           WRITE CoolIter, UserVar1
@@ -467,6 +467,7 @@ TakePhotoReturn:
           GOTO Event1
          ENDIF
          'DEBUG DEC UserVar1, CR
+         STORE DataStorage
          tempReg0 = 4 'Destination Index (EventTableReturn
          RUN 0        'Destination Slot
 
@@ -476,8 +477,8 @@ Event2: DEBUG CR,"PM" ,CR
   READ list_iter, UserVar0
   READ list_iter + UserVar0 + 1, UserVar2
   FOR UserVar5 = 0 TO (UserVar2-1)
-  DEBUG DEC UserVar5, CR
-  DEBUG DEC UserVar2, CR
+  'DEBUG DEC UserVar5, CR
+  'DEBUG DEC UserVar2, CR
   READ 2*UserVar5 + list_iter + 2, Word TempWord
   'DEBUG HEX CR, 2*UserVar5 + list_iter + 2, CR
   'DEBUG HEX CR, TempWord.HIGHBYTE
@@ -622,11 +623,11 @@ Event3: DEBUG CR,"LSt" ,CR
         READ list_iter + UserVar0 + 1, UserVar2
         'DEBUG "initial list_iter:"
         'DEBUG UserVar0, CR
-        IF UserVar0 < 89 THEN
+        IF UserVar0 < 4 THEN
           UserVar0 = 2*UserVar2 + UserVar0 + 1
           WRITE  list_iter, UserVar0
           STORE 0
-          WRITE DurDay, 0: WRITE DurHour, 0: WRITE DurMin, 1     '0 23 49
+          WRITE DurDay, 0: WRITE DurHour, 23: WRITE DurMin, 49     '0 23 49
           STORE 2
           FOR tempReg0 = 1 TO 3         'rows 1 to 3
               WRITE ETable+tempReg0*5+3, $FF   'Tag Event, increment tag count
@@ -634,7 +635,7 @@ Event3: DEBUG CR,"LSt" ,CR
         ELSE
           WRITE  list_iter, 0
         ENDIF
-        DEBUG HEX (list_iter+UserVar0), CR
+        'DEBUG HEX (list_iter+UserVar0), CR
         'DEBUG "initial list_iter:"
         'DEBUG UserVar0, CR
         STORE DataStorage
@@ -642,12 +643,18 @@ Event3: DEBUG CR,"LSt" ,CR
         RUN 0        'Destination Slot
 
 Event4: DEBUG CR,"LE" ,CR
-        STORE 0
-        WRITE DurDay, 0: WRITE DurHour, 0: WRITE DurMin, 1               '0 23 49
         STORE 2
-        FOR tempReg0 = 1 TO 17     'LOOP everything infinitely
+        READ main_iter, UserVar0
+        IF UserVar0 > 0 THEN
+        UserVar0 = UserVar0 - 1
+        WRITE main_iter, UserVar0
+        STORE 0
+        WRITE DurDay, 0: WRITE DurHour, 23: WRITE DurMin, 49               '0 23 49
+        STORE 2
+        FOR tempReg0 = 1 TO 17     'LOOP everything
           WRITE ETable+tempReg0*5+3, $FF   'Tag Event, increment tag count
         NEXT
+        ENDIF
         STORE DataStorage
         tempReg0 = 4 'Destination Index (EventTableReturn)
         RUN 0        'Destination Slot
@@ -692,26 +699,27 @@ P3vector:
 
          '    Day  Hour  Min   Tag  EventByte           Day Hour Min Tag EventByte
  ETable DATA  00,  00,   00,   $FF,     00   'Row 0     00, 00, 00, $FF, 00       |   0 0 0
-        DATA  00,  00,   02,   $FF,     01   'Row 1     00, 00, 02, $FF, 01       |   0 23 50
-        DATA  00,  00,   03,   $FF,     02   'Row 2     00, 00, 03, $FF, 02       |   1 0 0
-        DATA  00,  00,   04,   $FF,     03   'Row 3     00, 00, 04, $FF, 01       |   1 0 9
-        DATA  00,  00,   05,   $FF,     04   'Row 4     00, 00, 05, $FF, 01       |   1 0 10
-        DATA  00,  00,   06,   $FF,     04   'Row 5     00, 00, 06, $FF, 01       |   1 0 11
-        DATA  00,  00,   07,   $FF,     04   'Row 6     00, 00, 07, $FF, 03       |   1 0 12
-        DATA  00,  00,   09,   $FF,     04   'Row 7     00, 00, 08, $FF, 04       |   1 0 13
-        DATA  00,  00,   10,   $FF,     04   'Row 8     00, 00, 09, $FF, 04       |   1 0 14
-        DATA  00,  00,   11,   $FF,     04   'Row 9     00, 00, 10, $FF, 04       |   1 0 15
-        DATA  00,  00,   12,   $FF,     04   'Row 10    00, 00, 11, $FF, 04       |   1 0 30
-        DATA  00,  00,   13,   $FF,     04   'Row 11    00, 00, 12, $FF, 04       |   1 0 33
-        DATA  00,  00,   14,   $FF,     04   'Row 12    00, 00, 13, $FF, 04       |   1 0 38
-        DATA  00,  00,   15,   $FF,     04   'Row 13    00, 00, 14, $FF, 04       |   1 0 43
-        DATA  00,  00,   16,   $FF,     04   'Row 14    00, 00, 15, $FF, 04       |   1 0 48
-        DATA  00,  00,   17,   $FF,     04  'Row 15    00, 00, 16, $FF, 04       |   1 0 53
-        DATA  00,  00,   18,   $FF,     04   'Row 16    00, 00, 17, $FF, 04       |   1 0 58
-        DATA  00,  00,   19,   $FF,     04   'Row 17    00, 00, 18, $FF, 04       |
+        DATA  00,  23,   50,   $FF,     01   'Row 1     00, 00, 02, $FF, 01       |   0 23 50
+        DATA  01,  00,   01,   $FF,     02   'Row 2     00, 00, 03, $FF, 02       |   1 0 0
+        DATA  01,  00,   10,   $FF,     03   'Row 3     00, 00, 04, $FF, 01       |   1 0 9
+        DATA  01,  00,   11,   $FF,     04   'Row 4     00, 00, 05, $FF, 01       |   1 0 10
+        DATA  01,  00,   12,   $FF,     04   'Row 5     00, 00, 06, $FF, 01       |   1 0 11
+        DATA  01,  00,   13,   $FF,     04   'Row 6     00, 00, 07, $FF, 03       |   1 0 12
+        DATA  01,  00,   14,   $FF,     04   'Row 7     00, 00, 08, $FF, 04       |   1 0 13
+        DATA  01,  00,   15,   $FF,     04   'Row 8     00, 00, 09, $FF, 04       |   1 0 14
+        DATA  01,  00,   16,   $FF,     04   'Row 9     00, 00, 10, $FF, 04       |   1 0 15
+        DATA  01,  00,   17,   $FF,     04   'Row 10    00, 00, 11, $FF, 04       |   1 0 30
+        DATA  01,  00,   18,   $FF,     04   'Row 11    00, 00, 12, $FF, 04       |   1 0 33
+        DATA  01,  00,   19,   $FF,     04   'Row 12    00, 00, 13, $FF, 04       |   1 0 38
+        DATA  01,  00,   20,   $FF,     04   'Row 13    00, 00, 14, $FF, 04       |   1 0 43
+        DATA  01,  00,   21,   $FF,     04   'Row 14    00, 00, 15, $FF, 04       |   1 0 48
+        DATA  01,  00,   22,   $FF,     04  'Row 15    00, 00, 16, $FF, 04       |   1 0 53
+        DATA  01,  00,   23,   $FF,     04   'Row 16    00, 00, 17, $FF, 04       |   1 0 58
+        DATA  01,  00,   24,   $FF,     04   'Row 17    00, 00, 18, $FF, 04       |
 
 
 
 ''list_iter, og_switch1, TempWord1, og_switch2, TempWord2
 list_iter DATA 0, 1, Word 3000, 1, Word 6000, 2, Word 0, Word 3000, 2, Word 0, Word 6000, 1, Word 12000, 2, Word 6000, Word 6000, 3, Word 0, Word 3000, Word 3000, 1, Word 18000, 8, Word 1500, Word 1500, Word 1500, Word 1500, Word 1500, Word 1500, Word 1500, Word 1500, 4, Word 6000, Word 3000, Word 6000, Word 3000, 2, Word 0, Word 24000, 4, Word 3000, Word 3000, Word 3000, Word 3000, 3, Word 1500, Word 3000, Word 1500, 3, Word 4500, Word 1500, Word 3000, 3, Word 4500, Word 3000, Word 4500
 CoolIter DATA 0
+main_iter DATA 5 'insert number of times to loop data list
