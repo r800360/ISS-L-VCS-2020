@@ -2,7 +2,7 @@
 ' {$PBASIC 2.5}
 ' {$PORT COM28}
 
-'ISS Team L Software CodeeeeeeeeeeeEE
+'ISS Team L Software CodeeeeeeeeeeeEEeee eeeeeeee  eee
 version  CON 1602
 
 '**********************
@@ -454,8 +454,19 @@ Event1: DEBUG CR,"TP",CR
 TakePhotoReturn:
          'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
          '
+
          I2COUT InternI2C, PCF8574address, [$FF] 'IO2,3 LED, Pump and motor off (IO4,5 motor; IO6,7 pump)
          ' Values in return back are lost when jumping to Slot 6
+
+         READ CoolIter, UserVar1
+         DEBUG DEC UserVar1, CR
+         IF UserVar1 > 0 THEN
+          UserVar1 = UserVar1 - 1
+          WRITE CoolIter, UserVar1
+          'DEBUG DEC UserVar1, CR
+          GOTO Event1
+         ENDIF
+         'DEBUG DEC UserVar1, CR
          tempReg0 = 4 'Destination Index (EventTableReturn
          RUN 0        'Destination Slot
 
@@ -464,22 +475,31 @@ Event2: DEBUG CR,"PM" ,CR
   STORE 2
   READ list_iter, UserVar0
   READ list_iter + UserVar0 + 1, UserVar2
-  FOR UserVar5 = 0 TO UserVar2
+  FOR UserVar5 = 0 TO (UserVar2-1)
+  DEBUG DEC UserVar5, CR
+  DEBUG DEC UserVar2, CR
   READ 2*UserVar5 + list_iter + 2, Word TempWord
+  'DEBUG HEX CR, 2*UserVar5 + list_iter + 2, CR
+  'DEBUG HEX CR, TempWord.HIGHBYTE
+  'DEBUG HEX CR, TempWord.LOWBYTE
   IF UserVar5 // 2 = 0 THEN
     I2COUT InternI2C, PCF8574address, [%10101111] 'IO2,3 LED, IO 4,5 Motor, IO 6,7 Pump
+    'DEBUG DEC CR, TempWord, CR
     PAUSE TempWord
     I2COUT InternI2C, PCF8574address, [$FF]
   ELSE
     I2COUT InternI2C, PCF8574address, [%10011111] 'IO2,3 LED, IO 4,5 Motor, IO 6,7 Pump
+    'DEBUG DEC CR, TempWord, CR
     PAUSE TempWord
     I2COUT InternI2C, PCF8574address, [$FF]
   ENDIF
   NEXT
-  GOSUB Event1
-  STORE DataStorage
-  tempReg0 = 4
-  RUN 0
+  WRITE CoolIter, 2
+  GOTO Event1
+  'STORE DataStorage
+  'tempReg0 = 4
+  'RUN 0
+
 
 
 
@@ -602,24 +622,25 @@ Event3: DEBUG CR,"LSt" ,CR
         READ list_iter + UserVar0 + 1, UserVar2
         'DEBUG "initial list_iter:"
         'DEBUG UserVar0, CR
-        IF UserVar0 < 5 THEN
+        IF UserVar0 < 89 THEN
           UserVar0 = 2*UserVar2 + UserVar0 + 1
           WRITE  list_iter, UserVar0
           STORE 0
           WRITE DurDay, 0: WRITE DurHour, 0: WRITE DurMin, 1     '0 23 49
           STORE 2
-          FOR tempReg0 = 1 TO 5         'rows 1 to 3
+          FOR tempReg0 = 1 TO 3         'rows 1 to 3
               WRITE ETable+tempReg0*5+3, $FF   'Tag Event, increment tag count
           NEXT
         ELSE
           WRITE  list_iter, 0
         ENDIF
+        DEBUG HEX (list_iter+UserVar0), CR
         'DEBUG "initial list_iter:"
         'DEBUG UserVar0, CR
         STORE DataStorage
-
         tempReg0 = 4 'Destination Index (EventTableReturn)
         RUN 0        'Destination Slot
+
 Event4: DEBUG CR,"LE" ,CR
         STORE 0
         WRITE DurDay, 0: WRITE DurHour, 0: WRITE DurMin, 1               '0 23 49
@@ -673,9 +694,9 @@ P3vector:
  ETable DATA  00,  00,   00,   $FF,     00   'Row 0     00, 00, 00, $FF, 00       |   0 0 0
         DATA  00,  00,   02,   $FF,     01   'Row 1     00, 00, 02, $FF, 01       |   0 23 50
         DATA  00,  00,   03,   $FF,     02   'Row 2     00, 00, 03, $FF, 02       |   1 0 0
-        DATA  00,  00,   04,   $FF,     01   'Row 3     00, 00, 04, $FF, 01       |   1 0 9
-        DATA  00,  00,   05,   $FF,     01   'Row 4     00, 00, 05, $FF, 01       |   1 0 10
-        DATA  00,  00,   06,   $FF,     03   'Row 5     00, 00, 06, $FF, 01       |   1 0 11
+        DATA  00,  00,   04,   $FF,     03   'Row 3     00, 00, 04, $FF, 01       |   1 0 9
+        DATA  00,  00,   05,   $FF,     04   'Row 4     00, 00, 05, $FF, 01       |   1 0 10
+        DATA  00,  00,   06,   $FF,     04   'Row 5     00, 00, 06, $FF, 01       |   1 0 11
         DATA  00,  00,   07,   $FF,     04   'Row 6     00, 00, 07, $FF, 03       |   1 0 12
         DATA  00,  00,   09,   $FF,     04   'Row 7     00, 00, 08, $FF, 04       |   1 0 13
         DATA  00,  00,   10,   $FF,     04   'Row 8     00, 00, 09, $FF, 04       |   1 0 14
@@ -692,5 +713,5 @@ P3vector:
 
 
 ''list_iter, og_switch1, TempWord1, og_switch2, TempWord2
-list_iter DATA 0, 1, Word 3000, 1, Word 6000, 2, Word 36767, Word 37767
-CoolIter DATA 2
+list_iter DATA 0, 1, Word 3000, 1, Word 6000, 2, Word 0, Word 3000, 2, Word 0, Word 6000, 1, Word 12000, 2, Word 6000, Word 6000, 3, Word 0, Word 3000, Word 3000, 1, Word 18000, 8, Word 1500, Word 1500, Word 1500, Word 1500, Word 1500, Word 1500, Word 1500, Word 1500, 4, Word 6000, Word 3000, Word 6000, Word 3000, 2, Word 0, Word 24000, 4, Word 3000, Word 3000, Word 3000, Word 3000, 3, Word 1500, Word 3000, Word 1500, 3, Word 4500, Word 1500, Word 3000, 3, Word 4500, Word 3000, Word 4500
+CoolIter DATA 0
