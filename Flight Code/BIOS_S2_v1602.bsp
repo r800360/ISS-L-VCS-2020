@@ -487,13 +487,12 @@ Event5: DEBUG CR,"LE" ,CR
         STORE DataStorage              '
         tempReg0 = 4
         RUN 0
-Event6: DEBUG CR,"LF" ,CR
+Event6: DEBUG CR,"LP" ,CR
         STORE 2
         READ main_iter, UserVar0
         IF UserVar0 > 0 THEN
         UserVar0 = UserVar0 - 1
         WRITE main_iter, UserVar0
-        PAUSE 540000
         STORE 0
         WRITE DurDay, 1: WRITE DurHour, 00: WRITE DurMin, 23               '0 23 49
         STORE 2
