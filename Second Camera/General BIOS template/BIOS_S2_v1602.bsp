@@ -417,8 +417,8 @@ FoundEvent:
   STORE DataStorage
   BRANCH UserVar3,[Event0,    'Event 0 (do nothing)
   Event1,                     'Event 1 (
-  event2,                     'Event 2 (
-  event3]                     'Event 3 (
+  Event2,                     'Event 2 (
+  Event3]                     'Event 3 (
 
   UserVar3 = 0                 'Error
   DEBUG CR,"Event Byte is out of range",CR
@@ -539,4 +539,4 @@ P3vector:
 
 
 PhotoIter DATA 2
-MainIter DATA 75
+MainIter DATA 75 'This should be the number of structures in the data list * the number of times you loop through the data list
