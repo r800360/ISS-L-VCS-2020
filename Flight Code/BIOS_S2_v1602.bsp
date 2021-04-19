@@ -436,6 +436,11 @@ inputtimeout:
     STORE 0 : WRITE TagCnt,UserVar0                            'update TagCnt
     GOTO FoundEvent
 NextRow:NEXT
+  'Safe check: Catch all rule to avoid DurDay greater than 2 due to software bug
+  IF UserVar2 > 2 THEN
+    GOSUB RETEST
+  ENDIF
+
   STORE datastorage
   GOTO ReturnBack
 
@@ -503,26 +508,37 @@ Event1_TAKE_PHOTO: DEBUG CR,"TakePhoto",CR
 
 TakePhotoReturn:
         DEBUG "TakePhotoReturn",CR
-        STORE 0
 	'Fake time as if TakePhoto take no time
+        STORE 0
         WRITE DurDay, UserVar2 : WRITE DurHour, UserVar1 : WRITE DurMin, UserVar0
         ' Values in return back are lost when jumping to Slot 6
         GOTO Event0_ET_RET
 
 
 Event2_PUMP_FORWARD: DEBUG CR,"ALL ON" ,CR
-	WRITE PumpBack, 1
-        I2COUT InternI2C, PCF8574address, [%10111110] 'Both pumps + motor forward; LED on
+        STORE 2
+        READ PumpForward, UserVar5
+        'Only run pumps once for each test cycle
+        'Second entry will shut off pump to avoid pump running over a minute due to
+        'above TakePhoto no-time hack
+        IF UserVar5 = 0 THEN
+            WRITE PumpForward, 1
+	    WRITE PumpBack, 1
+            I2COUT InternI2C, PCF8574address, [%10111110] 'Both pumps + motor forward; LED on
+        ELSE
+            I2COUT InternI2C, PCF8574Address, [%00001000] 'Pump/motor off; LED on
+        ENDIF
         GOTO Event1_TAKE_PHOTO
 
 Event3_PUMP_BACK: DEBUG CR,"Pump back to avoid needle jam"  ,CR
         'For each forward, only backward once
+        STORE 2
         READ PumpBack, UserVar5
         if UserVar5 = 1 then
             WRITE PumpBack, 0
             I2COUT InternI2C, PCF8574address, [%01111101]
             PAUSE 2000   'Run to 2 seconds
-            I2COUT InternI2C, PCF8574Address, [%00001000] 'Pumo/motor off; LED on
+            I2COUT InternI2C, PCF8574Address, [%00001000] 'Pump/motor off; LED on
         endif
         GOTO Event0_ET_RET
 
@@ -550,17 +566,20 @@ Event6_LED_OFF:
         GOTO Event0_ET_RET
 
 RETEST:
+        STORE 2
+        WRITE PumpForward, 0
         STORE 0
         WRITE DurDay, 1: WRITE DurHour, 06: WRITE DurMin, 00  '01:06:00
-	GOTO Event0_ET_RET
+	RETURN
 
 Event7_RETEST: DEBUG CR,"RTST" ,CR
-        GOTO RETEST
+        GOSUB RETEST
+	GOTO Event0_ET_RET
 
 Event8_TEST_FAST:
         #IF FlyConfig = 0 #THEN
                 DEBUG CR,"Test fast 1 day",CR
-		GOTO RETEST
+		GOSUB RETEST
         #ENDIF
         'No-op
         GOTO Event0_ET_RET
@@ -583,17 +602,18 @@ ETable  DATA  00,  00,   00,   $00,     00   'Row 0 Disabled
         DATA  01,  06,   04,   $FF,     06   'Row 7 LED OFF
         DATA  01,  06,   04,   $00,     01   'Row 8 Take photo (disabled)
         DATA  01,  06,   05,   $FF,     03   'Row 9 Pump back for jam avoid
-        DATA  01,  06,   15,   $FF,     07   'Row 10 Retest
-        DATA  01,  06,   16,   $FF,     07   'Row 11 Retest
-        DATA  01,  06,   17,   $FF,     07   'Row 12 Retest
-        DATA  01,  06,   30,   $FF,     07   'Row 13 Retest
-        DATA  01,  07,   00,   $FF,     07   'Row 14 Retest
-        DATA  02,  00,   00,   $FF,     07   'Row 15 Retest
+        DATA  00,  00,   07,   $FF,     08   'Row 10 Test mode only fast forward
+        DATA  01,  06,   15,   $FF,     07   'Row 11 Retest
+        DATA  01,  06,   16,   $FF,     07   'Row 12 Retest
+        DATA  01,  06,   17,   $FF,     07   'Row 13 Retest
+        DATA  01,  06,   30,   $FF,     07   'Row 14 Retest
+        DATA  01,  07,   00,   $FF,     07   'Row 15 Retest
+        DATA  02,  00,   00,   $FF,     07   'Row 16 Retest
 
 
 
 'Warning: Update depth after add/delete ETable entries
-ETABLE_DEPTH CON 18
+ETABLE_DEPTH CON 16
 
 PumpBack DATA
-
+PumpForward DATA
