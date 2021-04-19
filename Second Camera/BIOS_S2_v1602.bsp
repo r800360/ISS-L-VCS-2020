@@ -464,7 +464,7 @@ Event1_TAKE_PHOTO: DEBUG CR,"TakePhoto",CR
         '
         '   Take a High Resolution Photo of the Chamber
         'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
-        PUT    CameraRes,Camera320      'Set resolution
+        PUT    CameraRes,Camera640      'Set resolution
         PUT    CameraQua,CameraBetter     'set photo quality
 
         PUT VectorFromSlot,2 'Return Slot

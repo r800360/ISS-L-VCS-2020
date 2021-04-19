@@ -29,8 +29,8 @@ version  CON 1602
 
 'WARNING Enable the following for flight mode
 'Remember to set S2 flight mode to disable event test mode
-'#DEFINE FlyConfig = 1              '1=Set to Flight Configuration, 0=Test Configuration
-'#DEFINE fastclock = 0              '0=Normal Time X1, 1=Medium Time ~X17 2=Fast Time ~X60
+#DEFINE FlyConfig = 1              '1=Set to Flight Configuration, 0=Test Configuration
+#DEFINE fastclock = 0              '0=Normal Time X1, 1=Medium Time ~X17 2=Fast Time ~X60
 
 
 #DEFINE testreset = 1              '1=test reset and reset count
@@ -644,7 +644,7 @@ noabort:
 
          'Speed up fastclock to take photo
          IF IN14 = 1 THEN
-             DEBUG "Speed up",CR
+             DEBUG " Speed up",CR
              TempWord = 100
          ENDIF
 

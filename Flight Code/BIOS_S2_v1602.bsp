@@ -28,7 +28,7 @@ version  CON 1602
 
 'WARNING REMEMBER to set FlyConfig in final flight mode
 
-#DEFINE FlyConfig = 0              '1=Set to Flight Configuration, 0=Test Configuration
+#DEFINE FlyConfig = 1              '1=Set to Flight Configuration, 0=Test Configuration
 #DEFINE fastclock = 0              '0=Normal Time X1, 1=Medium Time ~X17 2=Fast Time ~X60
 #DEFINE testreset = 1              '1=test reset and reset count
 #DEFINE SaySlot   = 1              '1=Say Slot with vector
@@ -492,7 +492,7 @@ Event1_TAKE_PHOTO: DEBUG CR,"TakePhoto",CR
         '
         '   Take a High Resolution Photo of the Chamber
         'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
-        PUT    CameraRes,Camera320      'Set resolution
+        PUT    CameraRes,Camera640      'Set resolution
         PUT    CameraQua,CameraBetter     'set photo quality
 
         PUT VectorFromSlot,2 'Return Slot
