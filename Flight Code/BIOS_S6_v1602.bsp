@@ -479,6 +479,11 @@ TakeandDownload:
 TakePhoto:
     DEBUG "tp-"                 'Tell terminal what I am doing now
     GOSUB TakePhoto1            'take the photo
+    DEBUG "shut-"
+    'Shutdown pumps to avoid running pump too long while saving photos
+    'May sleep a bit to give secondary cam a chance to take a photo
+    I2COUT InternI2C, PCF8574Address, [%00001000] 'Pumps/motor off; LED on
+
     DEBUG "sp",CR               'Tell terminal what I am doing now
     GOTO StorePhoto             'store the photo
   '
@@ -798,7 +803,7 @@ StorePhoto:
 	    SHIFTIN cameramiso, cameraclk, LSBFIRST,  [text]  'get the byte from the camera
 	    I2COUT InternI2c, $A0 | TempReg2,xcounter.HIGHBYTE\xcounter.LOWBYTE, [text] 'store the byte in eeram
 	    'WARNING: CHECK PHOTO UPLOAD RELIABILITY; Unstable if remove
-            PAUSE 1
+            PAUSE 2
 	    '    DEBUG "T=",HEX2 text," X",HEX4 xcounter,CR
 	    xcounter=xcounter+1                       'point target to next location
 	    IF xcounter.LOWBYTE  <> 0 THEN GOTO NotYetHeart   'no heartbeat yet
