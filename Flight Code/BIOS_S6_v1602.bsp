@@ -477,6 +477,9 @@ TakeandDownload:
   GOTO DumpInText             'will dump in text to McMek
   '
 TakePhoto:
+    GET MLabStatus,UserVar5               'get MicroLab Status byte
+    DEBUG "Bank 0:", HEX4 (UserVar5 & B0ready), " 2:", HEX4 (UserVar5 & B1ready), " 4:", HEX4 (UserVar5 & B2ready), CR
+
     DEBUG "tp-"                 'Tell terminal what I am doing now
     GOSUB TakePhoto1            'take the photo
     DEBUG "shut-"
