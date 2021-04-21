@@ -480,15 +480,13 @@ TakePhoto:
 
     'Avoid overwriting existing photos if all 3 banks full
     GET MLabStatus,UserVar5               'get MicroLab Status byte
-    DEBUG "Bank b0:", HEX4 (UserVar5 & B0ready), " b2:", HEX4 (UserVar5 & B1ready), " b4:", HEX4 (UserVar5 & B2ready), CR
+    DEBUG "MS:", HEX4 UserVar5, CR
     IF (UserVar5 & (B0ready | B1ready | B2ready)) = (B0ready | B1ready | B2ready) THEN
-        DEBUG "Skip photo on bank full", CR
         GOTO ReturnBack
     ENDIF
 
     DEBUG "tp-"                 'Tell terminal what I am doing now
     GOSUB TakePhoto1            'take the photo
-    DEBUG "shut-"
     'Shutdown pumps to avoid running pump too long while saving photos
     'May sleep a bit to give secondary cam a chance to take a photo
     I2COUT InternI2C, PCF8574Address, [%00001000] 'Pumps/motor off; LED on

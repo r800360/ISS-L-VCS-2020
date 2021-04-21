@@ -477,6 +477,13 @@ TakeandDownload:
   GOTO DumpInText             'will dump in text to McMek
   '
 TakePhoto:
+    'Avoid overwriting existing photos if all 3 banks full
+    GET MLabStatus,UserVar5               'get MicroLab Status byte
+    DEBUG "MS:", HEX4 UserVar5, CR
+    IF (UserVar5 & (B0ready | B1ready | B2ready)) = (B0ready | B1ready | B2ready) THEN
+        GOTO ReturnBack
+    ENDIF
+
     DEBUG "tp-"                 'Tell terminal what I am doing now
     GOSUB TakePhoto1            'take the photo
     DEBUG "sp",CR               'Tell terminal what I am doing now
