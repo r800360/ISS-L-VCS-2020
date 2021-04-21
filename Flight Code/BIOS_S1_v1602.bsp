@@ -476,7 +476,7 @@ PayloadTestP1:
     IF (UserVar5 & %00000011) <> %00000011 THEN
       I2COUT InternI2C, PCF8574address, [UserVar5 | %00000011]
     ELSE
-      I2COUT InternI2C, PCF8574address, [UserVar5 & %11111101]
+      I2COUT InternI2C, PCF8574address, [UserVar5 & %11111110]
     ENDIF
     GOTO PayloadOptionsText
 
@@ -485,7 +485,7 @@ PayloadTestP0:
     IF (UserVar5 & %00000011) <> %00000011 THEN
       I2COUT InternI2C, PCF8574address, [UserVar5 | %00000011]
     ELSE
-      I2COUT InternI2C, PCF8574address, [UserVar5 & %11111110]
+      I2COUT InternI2C, PCF8574address, [UserVar5 & %11111101]
     ENDIF
     GOTO PayloadOptionsText
 
