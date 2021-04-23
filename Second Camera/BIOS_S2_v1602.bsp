@@ -485,7 +485,7 @@ TakePhotoReturn:
         GOTO Event0_ET_RET
 
 Event2_CHECK_P14: DEBUG CR,"CHK P14: ", DEC IN14,CR
-   IF IN14 = 1 THEN
+        IF IN14 = 1 THEN
             GOTO Event1_TAKE_PHOTO
         ENDIF
 
