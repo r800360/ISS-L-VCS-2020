@@ -493,12 +493,11 @@ Event0_ET_RET: DEBUG CR,"EventTableReturn",CR
 
 Event1_TAKE_PHOTO: DEBUG CR,"TakePhoto",CR
         GOSUB SUB_LED_ON
-
         '
         '   Take a High Resolution Photo of the Chamber
         'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
         PUT    CameraRes,Camera640      'Set resolution
-        PUT    CameraQua,CameraBetter     'set photo quality
+        PUT    CameraQua,CameraBest     'set photo quality
 
         PUT VectorFromSlot,2 'Return Slot
         PUT VectorFromNum,1  'Return Index
@@ -534,6 +533,7 @@ Event2_PUMP_FORWARD: DEBUG CR,"ALL ON till photo taken" ,CR
             'Give extra 4 seconds for slave to react
             PAUSE 4000
         ELSE
+            OUT14 = 0
             I2COUT InternI2C, PCF8574Address, [%00001000] 'Pump/motor off; LED on
         ENDIF
         GOTO Event1_TAKE_PHOTO
@@ -553,19 +553,20 @@ Event3_PUMP_BACK: DEBUG CR,"Pump back to avoid needle jam"  ,CR
         GOTO Event0_ET_RET
 
 Event4_PUMP_STOP: DEBUG CR,"Pump/motor stop" ,CR
+        OUT14 = 0
         I2COUT InternI2C, PCF8574Address, [%00001000] 'Pumo/motor off; LED on
         GOTO Event1_TAKE_PHOTO
 
 SUB_LED_ON:
+        'Signal slave STAMP to take photos
+        OUTPUT 14
+        OUT14 = 1
+
         I2CIN  InternI2C, PCF8574address, [UserVar5]
         I2COUT InternI2C, PCF8574address, [UserVar5 | %00001000]
         RETURN
 
 Event5_LED_ON:
-        'Signal slave STAMP to take photos
-	OUTPUT 14
-	OUT14 = 1
-
         GOSUB SUB_LED_ON
         GOTO Event0_ET_RET
 
@@ -613,15 +614,15 @@ ETable  DATA  00,  00,   00,   $00,     00   'Row 0 Disabled
         DATA  00,  00,   04,   $FF,     06   'Row 3 LED OFF
         DATA  00,  00,   05,   $FF,     08   'Row 4 Test mode only fast forward
         DATA  01,  06,   02,   $FF,     02   'Row 5 Pump forward
-        DATA  01,  06,   03,   $00,     04   'Row 6 Pump stop (disabled)
-        DATA  01,  06,   03,   $FF,     06   'Row 7 LED OFF
-        DATA  01,  06,   04,   $00,     01   'Row 8 Take photo (disabled)
-        DATA  01,  06,   04,   $FF,     03   'Row 9 Pump back for jam avoid
-        DATA  00,  00,   07,   $FF,     08   'Row 10 Test mode only fast forward
-        DATA  01,  06,   15,   $FF,     07   'Row 11 Retest
-        DATA  01,  06,   16,   $FF,     07   'Row 12 Retest
-        DATA  01,  06,   17,   $FF,     07   'Row 13 Retest
-        DATA  01,  06,   30,   $FF,     07   'Row 14 Retest
+        DATA  01,  06,   03,   $FF,     04   'Row 6 Pump stop (Extra Failsafe)
+        DATA  01,  06,   04,   $FF,     03   'Row 7 Pump back for jam avoid
+        DATA  01,  06,   06,   $FF,     01   'Row 8 Take photo
+        DATA  01,  06,   07,   $FF,     06   'Row 9 LED OFF
+        DATA  01,  06,   08,   $FF,     08   'Row 10 Test mode only fast forward
+        DATA  01,  06,   20,   $FF,     07   'Row 11 Retest
+        DATA  01,  06,   25,   $FF,     07   'Row 12 Retest
+        DATA  01,  06,   30,   $FF,     07   'Row 13 Retest
+        DATA  01,  06,   50,   $FF,     07   'Row 14 Retest
         DATA  01,  07,   00,   $FF,     07   'Row 15 Retest
         DATA  02,  00,   00,   $FF,     07   'Row 16 Retest
 

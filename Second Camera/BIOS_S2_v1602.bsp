@@ -465,7 +465,7 @@ Event1_TAKE_PHOTO: DEBUG CR,"TakePhoto",CR
         '   Take a High Resolution Photo of the Chamber
         'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
         PUT    CameraRes,Camera640      'Set resolution
-        PUT    CameraQua,CameraBetter     'set photo quality
+        PUT    CameraQua,CameraBest     'set photo quality
 
         PUT VectorFromSlot,2 'Return Slot
         PUT VectorFromNum,1  'Return Index
@@ -517,4 +517,3 @@ ETable  DATA  00,  00,   00,   $00,     00   'Row 0 disabled
 'Warning: Update depth after add/delete ETable entries
 ETABLE_DEPTH CON 4
 
-PumpBack DATA
