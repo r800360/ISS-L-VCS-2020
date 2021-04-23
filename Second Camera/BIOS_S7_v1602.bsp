@@ -398,6 +398,9 @@ systeminit:
   WRITE Missionday, 0
   'Put P14 in input mode
   INPUT 14
+  'LED control PIN8
+  OUTPUT 8
+  OUT8 = 0
 
 '
   '-------- Setup other conditions here  ------
