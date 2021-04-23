@@ -526,6 +526,11 @@ Event2_PUMP_FORWARD: DEBUG CR,"ALL ON till photo taken" ,CR
 	    WRITE PumpBack, 1
             I2COUT InternI2C, PCF8574address, [%10111101] 'Both pumps + motor forward; LED on
             PAUSE 5000 'Run 5 seconds
+
+	    'Signal slave STAMP to take photos
+	    OUTPUT 14
+	    OUT14 = 1
+
         ELSE
             I2COUT InternI2C, PCF8574Address, [%00001000] 'Pump/motor off; LED on
         ENDIF
@@ -541,6 +546,8 @@ Event3_PUMP_BACK: DEBUG CR,"Pump back to avoid needle jam"  ,CR
             PAUSE 2000   'Run to 2 seconds
             I2COUT InternI2C, PCF8574Address, [%00001000] 'Pump/motor off; LED on
         endif
+        GOSUB SUB_LED_OFF
+
         GOTO Event0_ET_RET
 
 Event4_PUMP_STOP: DEBUG CR,"Pump/motor stop" ,CR
@@ -548,22 +555,27 @@ Event4_PUMP_STOP: DEBUG CR,"Pump/motor stop" ,CR
         GOTO Event1_TAKE_PHOTO
 
 SUB_LED_ON:
-        'Signal slave STAMP to take photos
-        OUTPUT 14
-        OUT14 = 1
         I2CIN  InternI2C, PCF8574address, [UserVar5]
         I2COUT InternI2C, PCF8574address, [UserVar5 | %00001000]
         RETURN
 
 Event5_LED_ON:
+        'Signal slave STAMP to take photos
+	OUTPUT 14
+	OUT14 = 1
+
         GOSUB SUB_LED_ON
         GOTO Event0_ET_RET
+
+SUB_LED_OFF:
+        I2CIN  InternI2C, PCF8574address, [UserVar5]
+        I2COUT InternI2C, PCF8574address, [UserVar5 & %11110111]
+        RETURN
 
 Event6_LED_OFF:
         'Signal slave to stop taking photos
         OUT14 = 0
-        I2CIN  InternI2C, PCF8574address, [UserVar5]
-        I2COUT InternI2C, PCF8574address, [UserVar5 & %11110111]
+        GOSUB SUB_LED_OFF
         GOTO Event0_ET_RET
 
 RETEST:

@@ -510,7 +510,9 @@ P3vector:
         '     Day  Hour  Min   Tag  EventByte
 ETable  DATA  00,  00,   00,   $00,     00   'Row 0 disabled
         DATA  00,  00,   00,   $66,     02   'Row 1 Check P14 & take a test photo
-        DATA  00,  00,   05,   $88,     01   'Row 2 Periodically take a test photo
+        DATA  00,  00,   05,   $FF,     01   'Row 2 Take a test photo
+        DATA  00,  00,   07,   $FF,     01   'Row 2 Take a test photo
+
 
 'Warning: Update depth after add/delete ETable entries
 ETABLE_DEPTH CON 2
