@@ -641,14 +641,18 @@ noabort:
          TempWord = MoprClk0Val            'Get value to reinit mission operations clock 0
 
          'Speed up fastclock to take photo
+         STORE 0
+         READ RstTime, UserVar5
          IF IN14 = 1 THEN
              DEBUG " Speed up",CR
-             ResetTime = 1
+             IF UserVar5 = 1 THEN
+                 WRITE RstTime, 1
+             ENDIF
+             'Speed up to fastclock 2
              TempWord = 100
-         ELSEIF ResetTime = 1 THEN
+         ELSEIF UserVar5 = 1 THEN
              'Reset time to reactivate Slot2 event table tasks
-             ResetTime = 0
-             STORE 0
+             WRITE RstTime, 0
              WRITE DurDay, 0: WRITE DurHour, 0: WRITE DurMin, 0  '00:00:00
          ENDIF
 
@@ -745,4 +749,4 @@ TagCnt   DATA 00
 DurMin   DATA 00
 DurHour  DATA 00
 DurDay   DATA 00
-ResetTime DATA 00
+RstTime  DATA 00
