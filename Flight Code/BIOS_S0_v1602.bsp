@@ -654,7 +654,9 @@ ExampleCount0:
 noabort:
          '****************************************************
          '
-         DEBUG "m"                         '"m" output appx every sec at normal clk rate
+         'DEBUG "m"                         '"m" output appx every sec at normal clk rate
+         DEBUG DEC OUT14
+
          TempWord = MoprClk0Val            'Get value to reinit mission operations clock 0
          PUT MoprClk0,Word TempWord        'Reinit mission operations clock 0
          '
