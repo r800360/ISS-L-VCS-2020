@@ -642,7 +642,6 @@ noabort:
 
          'Speed up fastclock to take photo
          IF IN14 = 1 THEN
-             DEBUG " Speed up",CR
              'Speed up to fastclock 2
              TempWord = 100
          ENDIF

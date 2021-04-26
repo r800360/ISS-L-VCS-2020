@@ -396,6 +396,8 @@ systeminit:
   WRITE Missionmin, 0
   WRITE Missionhour, 0
   WRITE Missionday, 0
+  'I2C low for all pins
+  I2COUT InternI2C, PCF8574address, [$0]
 
 '
   '-------- Setup other conditions here  ------
