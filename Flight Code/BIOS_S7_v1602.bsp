@@ -371,7 +371,6 @@ systeminit:
   OUTPUT  camerapower 'Set camera power to output the high
   LOW     votedead    'Set to master is alive
   OUTPUT  votedead    'Set to output alive signal
-  INPUT   payloadio14 'Set to input no drive to expansion board
   HIGH    cameraCS    'DeSelect camera
   OUTPUT  cameraCS    'Camera Select pin
   '
@@ -398,6 +397,8 @@ systeminit:
   WRITE Missionday, 0
   'I2C low for all pins
   I2COUT InternI2C, PCF8574address, [$0]
+  OUTPUT 14
+  OUT14 = 0
 
 '
   '-------- Setup other conditions here  ------

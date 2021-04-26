@@ -525,13 +525,13 @@ Event2_PUMP_FORWARD: DEBUG CR,"ALL ON till photo taken" ,CR
 	    WRITE PumpBack, 1
             I2COUT InternI2C, PCF8574address, [%10111101] 'Both pumps + motor forward; LED on
             'Run pump 3 seconds to build up pressure
-            PAUSE 3000
+            PAUSE 12000
 
 	    'Signal slave STAMP to take photos
 	    OUTPUT 14
 	    OUT14 = 1
             'Give extra 4 seconds for slave to react
-            PAUSE 4000
+            PAUSE 3000
         ELSE
             OUT14 = 0
             I2COUT InternI2C, PCF8574Address, [%00001000] 'Pump/motor off; LED on

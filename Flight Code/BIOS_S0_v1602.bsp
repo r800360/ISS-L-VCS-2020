@@ -398,20 +398,10 @@ systeminitReturn:                       'return location from slot 7
     '
     DEBUG CR,"Payload Power Initialization"
     FOR tempreg0 = 0 TO 10
-      OUT8=0
-      OUT9=1
-      OUTPUT 8
-      OUTPUT 9
       xcounter = $ff
 twiddleDum:
       xcounter = xcounter -1
       IF xcounter <> 0 THEN twiddleDum
-      'OUT8=1
-      'OUT9=0
-      'OUTPUT 8
-      'OUTPUT 9
-      HIGH 8
-      LOW 9
       xcounter = $ff
 twiddleDee:
       XCOuNTer = xcounter -1

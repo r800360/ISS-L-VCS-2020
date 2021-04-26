@@ -557,8 +557,8 @@ TestPFC8574Outputloop:
 '  PULSOUT votedead,5                                 'sync pulse
   I2COUT InternI2c, PCF8574address, [TempReg0]        'output this byte
   TempReg0=TempReg0-1                                 'inc value on output
-  HIGH  payloadio14
-  IF TempReg0 > $80  THEN LOW payloadio14
+  'HIGH  payloadio14
+  'IF TempReg0 > $80  THEN LOW payloadio14
   SERIN con_in,con_baud,con_tout,TestPFC8574Outputloop,[TempReg0] 'get terminal input, timeout at 100ms
   GOTO LOOP1
 '  GOTO TestPFC8574Outputloop                          'keep doing it until reset
