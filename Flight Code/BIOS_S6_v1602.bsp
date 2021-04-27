@@ -497,7 +497,7 @@ TakePhoto:
 TakePhoto1:
   '
   LOW camerapower               'turn camera power off if on in error recovery
-  PAUSE 500                     '1/2 sec
+  PAUSE 100                     '1/2 sec
    '
   HIGH cameraCS               'set camera chip select to high
   HIGH  camerapower           'set camera power on
@@ -775,10 +775,10 @@ StorePhoto:
     '
     xcounter = 8               'point to Length
     I2COUT InternI2c, $A0 | TempReg2,xcounter.HIGHBYTE\xcounter.LOWBYTE, [Tempword.HIGHBYTE]
-    PAUSE 9
+    PAUSE 1
     xcounter=xcounter+1
     I2COUT InternI2c, $A0 | TempReg2,xcounter.HIGHBYTE\xcounter.LOWBYTE, [Tempword.LOWBYTE]
-    PAUSE 9
+    PAUSE 1
     '
     ' JPG file length now place in the header of the active eeram memory bank
     ' Now store name in header
@@ -788,7 +788,7 @@ StorePhoto:
     FOR counter = 0 TO 6                   'lets move the ascii file name and number to the EERAM
     READ IDcodefile+counter,TempReg0       'Get MSD of file name and number in ascii
     I2COUT InternI2c, $A0 | TempReg2,xcounter.HIGHBYTE\xcounter.LOWBYTE, [TempReg0]
-    PAUSE 9                                'must wait for eeram write to finish
+    PAUSE 1                                'must wait for eeram write to finish
     xcounter=xcounter+1                    'point xcounter to next mem location to put file name and  number
     NEXT                                   'xfer to balance of the ascii file numbers
     '
@@ -797,7 +797,7 @@ StorePhoto:
     '
     TempReg0 = "P"                          'Type of file "P" photo (note not used  yet)
     I2COUT InternI2c, $A0 | TempReg2,xcounter.HIGHBYTE\xcounter.LOWBYTE, [TempReg0]
-    PAUSE 9                                'must wait for eeram write to finish
+    PAUSE 1                                'must wait for eeram write to finish
     '
     ' Header now finished, time to do data
     '
@@ -810,7 +810,7 @@ StorePhoto:
 	    SHIFTIN cameramiso, cameraclk, LSBFIRST,  [text]  'get the byte from the camera
 	    I2COUT InternI2c, $A0 | TempReg2,xcounter.HIGHBYTE\xcounter.LOWBYTE, [text] 'store the byte in eeram
 	    'WARNING: CHECK PHOTO UPLOAD RELIABILITY; Unstable if remove
-            PAUSE 9
+            PAUSE 2
 	    '    DEBUG "T=",HEX2 text," X",HEX4 xcounter,CR
 	    xcounter=xcounter+1                       'point target to next location
 	    IF xcounter.LOWBYTE  <> 0 THEN GOTO NotYetHeart   'no heartbeat yet
@@ -914,7 +914,7 @@ UpLoadFB:
     '
     'DEBUG CR,HEX4 TempWord 'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
     xcounter = xcounter + 1   'now points to the first byte of the jpg file
-    PAUSE 5                   'Pause 1 millisec to allow master processing of length plus others
+    PAUSE 1                   'Pause 1 millisec to allow master processing of length plus others
     '
     'Now send the jpg data for the length of TempWord
     '
@@ -953,7 +953,7 @@ nextblock:
     '
     ' Jpg photo data finished up loading, Now need to upload the associated text file
     '
-    PAUSE 10     'wait for 4 millisec between jpg data finished and text starting
+    PAUSE 4     'wait for 4 millisec between jpg data finished and text starting
     '
     ' Upload text file in this bank
     '
