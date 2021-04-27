@@ -805,7 +805,7 @@ StorePhoto:
 	    SHIFTIN cameramiso, cameraclk, LSBFIRST,  [text]  'get the byte from the camera
 	    I2COUT InternI2c, $A0 | TempReg2,xcounter.HIGHBYTE\xcounter.LOWBYTE, [text] 'store the byte in eeram
 	    'WARNING: CHECK PHOTO UPLOAD RELIABILITY; Unstable if remove
-            PAUSE 9
+            PAUSE 3
 	    '    DEBUG "T=",HEX2 text," X",HEX4 xcounter,CR
 	    xcounter=xcounter+1                       'point target to next location
 	    IF xcounter.LOWBYTE  <> 0 THEN GOTO NotYetHeart   'no heartbeat yet
